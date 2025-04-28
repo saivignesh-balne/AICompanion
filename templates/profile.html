@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm glass-card animate__animated animate__fadeIn">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0"><i class="fas fa-user me-2"></i> User Profile</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 text-center">
+                            <div class="mb-3">
+                                <img src="{{ url_for('static', filename='images/profile.png') }}" 
+                                     class="img-fluid rounded-circle border border-4 border-primary" 
+                                     width="200" height="200" alt="Profile">
+                            </div>
+                            <button class="btn btn-outline-primary btn-sm rounded-pill">
+                                <i class="fas fa-camera me-1"></i> Change Photo
+                            </button>
+                        </div>
+                        <div class="col-md-8">
+                            <form>
+                                <div class="mb-3">
+                                    <label class="form-label">Username</label>
+                                    <input type="text" class="form-control" value="{{ user.username }}" readonly>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Email</label>
+                                    <input type="email" class="form-control" value="user@example.com">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Change Password</label>
+                                    <input type="password" class="form-control" placeholder="New password">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Confirm Password</label>
+                                    <input type="password" class="form-control" placeholder="Confirm new password">
+                                </div>
+                                <button type="submit" class="btn btn-primary rounded-pill">
+                                    <i class="fas fa-save me-1"></i> Save Changes
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .profile-img {
+        transition: all 0.3s ease;
+    }
+    
+    .profile-img:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .form-control:read-only {
+        background-color: rgba(0,0,0,0.05);
+    }
+</style>
+{% endblock %}

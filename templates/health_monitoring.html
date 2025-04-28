@@ -1,0 +1,314 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <!-- Header Section -->
+    <div class="text-center mb-5 animate__animated animate__fadeInDown">
+        <h1 class="display-5 fw-bold"><i class="fas fa-heartbeat me-2"></i> Health Monitoring</h1>
+        <p class="lead text-muted">Track and manage your health metrics with intelligent reminders</p>
+    </div>
+    
+    <div class="row g-4">
+        <!-- Reminders Card -->
+        <div class="col-lg-6 animate__animated animate__fadeInLeft">
+            <div class="card border-0 shadow-sm glass-card h-100">
+                <div class="card-header bg-transparent border-0">
+                    <h3 class="mb-0"><i class="fas fa-clock me-2"></i> Daily Reminders</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('health_monitoring') }}" class="needs-validation" novalidate>
+                        <div class="mb-4">
+                            <label for="wake_up_time" class="form-label text-muted">
+                                <i class="fas fa-sun me-2 text-warning"></i> Wake Up Time
+                            </label>
+                            <input type="time" class="form-control form-control-lg time-input"
+                                id="wake_up_time" name="wake_up_time" value="{{ wake_up_time }}" required>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="tablets_time" class="form-label text-muted">
+                                <i class="fas fa-pills me-2 text-primary"></i> Medication Time
+                            </label>
+                            <input type="time" class="form-control form-control-lg time-input" 
+                                   id="tablets_time" name="tablets_time" value="{{ tablets_time }}" required>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="sleep_time" class="form-label text-muted">
+                                <i class="fas fa-moon me-2 text-info"></i> Sleep Time
+                            </label>
+                            <input type="time" class="form-control form-control-lg time-input" 
+                                   id="sleep_time" name="sleep_time" value="{{ sleep_time }}" required>
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg px-4 rounded-pill shadow-sm">
+                                <i class="fas fa-save me-2"></i> Save Reminders
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Health Metrics Card -->
+        <div class="col-lg-6 animate__animated animate__fadeInRight">
+            <div class="card border-0 shadow-sm glass-card h-100">
+                <div class="card-header bg-transparent border-0">
+                    <h3 class="mb-0"><i class="fas fa-chart-line me-2"></i> Health Metrics</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('health_monitoring') }}">
+                        <div class="mb-4">
+                            <label for="heart_rate" class="form-label text-muted">
+                                <i class="fas fa-heart me-2 text-danger"></i> Heart Rate (bpm)
+                            </label>
+                            <input type="number" class="form-control form-control-lg" 
+                                   id="heart_rate" name="heart_rate" placeholder="e.g. 72" value="{{ request.form.heart_rate }}">
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="blood_pressure" class="form-label text-muted">
+                                <i class="fas fa-tint me-2 text-success"></i> Blood Pressure
+                            </label>
+                            <input type="text" class="form-control form-control-lg" 
+                                   id="blood_pressure" name="blood_pressure" placeholder="120/80" value="{{ request.form.blood_pressure }}">
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-success btn-lg px-4 rounded-pill shadow-sm">
+                                <i class="fas fa-plus me-2"></i> Record Metrics
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upcoming Alarms Section -->
+    <div class="row mt-4">
+        <div class="col-12 animate__animated animate__fadeInUp">
+            <div class="card border-0 shadow-sm glass-card">
+                <div class="card-header bg-transparent border-0">
+                    <h3 class="mb-0"><i class="fas fa-bell me-2"></i> Upcoming Alarms</h3>
+                </div>
+                <div class="card-body">
+                    <div class="alarm-list">
+                        <!-- Wake Up Alarm -->
+                        <div class="alarm-item d-flex justify-content-between align-items-center p-3 mb-3 rounded-3 bg-light">
+                            <div class="d-flex align-items-center">
+                                <div class="alarm-icon bg-warning bg-opacity-10 rounded-circle p-3 me-3">
+                                    <i class="fas fa-sun fa-lg text-warning"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1">Wake Up</h5>
+                                    <p class="mb-0 text-muted">{{ wake_up_time }}</p>
+                                </div>
+                            </div>
+                            <span class="badge bg-warning text-dark" id="wake-badge">Active</span>
+                        </div>
+                        
+                        <!-- Medication Alarm -->
+                        <div class="alarm-item d-flex justify-content-between align-items-center p-3 mb-3 rounded-3 bg-light">
+                            <div class="d-flex align-items-center">
+                                <div class="alarm-icon bg-primary bg-opacity-10 rounded-circle p-3 me-3">
+                                    <i class="fas fa-pills fa-lg text-primary"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1">Medication</h5>
+                                    <p class="mb-0 text-muted">{{ tablets_time }}</p>
+                                </div>
+                            </div>
+                            <span class="badge bg-primary" id="tablets-badge">Active</span>
+                        </div>
+                        
+                        <!-- Sleep Alarm -->
+                        <div class="alarm-item d-flex justify-content-between align-items-center p-3 rounded-3 bg-light">
+                            <div class="d-flex align-items-center">
+                                <div class="alarm-icon bg-info bg-opacity-10 rounded-circle p-3 me-3">
+                                    <i class="fas fa-moon fa-lg text-info"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1">Sleep Time</h5>
+                                    <p class="mb-0 text-muted">{{ sleep_time }}</p>
+                                </div>
+                            </div>
+                            <span class="badge bg-info" id="sleep-badge">Active</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Health History Section -->
+    <div class="row mt-4">
+        <div class="col-12 animate__animated animate__fadeInUp">
+            <div class="card border-0 shadow-sm glass-card">
+                <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center">
+                    <h3 class="mb-0"><i class="fas fa-history me-2"></i> Health History</h3>
+                    <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#healthHistory">
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                </div>
+                <div class="collapse show" id="healthHistory">
+                    <div class="card-body">
+                        {% if health_data %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Heart Rate</th>
+                                        <th>Blood Pressure</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for record in health_data %}
+                                    <tr>
+                                        <td>{{ record.date.strftime('%Y-%m-%d %H:%M') }}</td>
+                                        <td>
+                                            <span class="badge bg-danger bg-opacity-10 text-danger">
+                                                {{ record.heart_rate }} bpm
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-success bg-opacity-10 text-success">
+                                                {{ record.blood_pressure }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-heartbeat fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No health data recorded yet</h5>
+                            <p class="text-muted">Start by entering your health metrics above</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Notification Section -->
+
+<style>
+    /* Time input specific styling */
+    .time-input {
+        color: #3a5a8c !important;
+        font-weight: 500;
+    }
+    
+    /* Webkit browsers (Chrome, Safari) specific styling for time picker */
+    .time-input::-webkit-datetime-edit-fields-wrapper {
+        background: transparent;
+    }
+    .time-input::-webkit-datetime-edit-text,
+    .time-input::-webkit-datetime-edit-hour-field,
+    .time-input::-webkit-datetime-edit-minute-field,
+    .time-input::-webkit-datetime-edit-ampm-field {
+        color: #3a5a8c;
+        font-weight: 500;
+        padding: 0 2px;
+    }
+    .time-input::-webkit-calendar-picker-indicator {
+        filter: invert(0.5) sepia(1) saturate(5) hue-rotate(175deg);
+    }
+    
+    /* Firefox specific styling */
+    .time-input::-moz-focus-inner {
+        color: #3a5a8c;
+        font-weight: 500;
+        border: 0;
+    }
+    
+    [data-bs-theme="dark"] .time-input {
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .alarm-item {
+        transition: all 0.3s ease;
+    }
+    
+    .alarm-item:hover {
+        transform: translateX(5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+    
+    .alarm-icon {
+        transition: all 0.3s ease;
+    }
+    
+    .alarm-item:hover .alarm-icon {
+        transform: rotate(10deg) scale(1.1);
+    }
+    
+    .table-hover tbody tr {
+        transition: all 0.2s;
+    }
+    
+    .table-hover tbody tr:hover {
+        background-color: rgba(74, 111, 165, 0.05);
+        transform: translateX(3px);
+    }
+    
+    /* Notification Styles */
+    .notification {
+        width: 300px;
+        padding: 15px;
+        margin-bottom: 10px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        background: white;
+        border-left: 5px solid;
+        display: flex;
+        align-items: center;
+        transform: translateX(100%);
+        animation: slideIn 0.5s forwards, fadeOut 0.5s forwards 9.5s;
+    }
+    
+    @keyframes slideIn {
+        to { transform: translateX(0); }
+    }
+    
+    @keyframes fadeOut {
+        to { opacity: 0; }
+    }
+    
+    .notification.wake {
+        border-color: #FFA500;
+        background: #FFF3CD;
+    }
+    
+    .notification.tablets {
+        border-color: #17A2B8;
+        background: #D1ECF1;
+    }
+    
+    .notification.sleep {
+        border-color: #6C757D;
+        background: #E2E3E5;
+    }
+    
+    .notification-icon {
+        font-size: 24px;
+        margin-right: 10px;
+    }
+    
+    .notification-close {
+        margin-left: auto;
+        cursor: pointer;
+        font-weight: bold;
+    }
+    
+    .notification-content {
+        flex-grow: 1;
+    }
+</style>
+{% endblock %}

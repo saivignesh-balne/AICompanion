@@ -1,0 +1,309 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <!-- Hero Section -->
+    <section class="hero-section py-5 my-4">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-5 mb-lg-0 text-lg-start animate__animated animate__fadeInLeft">
+                <h1 class="display-4 fw-bold mb-4">Your Intelligent <span class="text-gradient">Companion</span></h1>
+                <p class="lead mb-4">Helps in embracing quality of life.</p>
+                
+                <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start">
+                    <a href="#features" class="btn btn-primary btn-lg px-4 rounded-pill shadow-sm">
+                        <i class="fas fa-star me-2"></i> Explore Features
+                    </a>
+                    <a href="{{ url_for('emergency_sos') }}" class="btn btn-outline-danger btn-lg px-4 rounded-pill shadow-sm pulse">
+                        <i class="fas fa-bell me-2"></i> Emergency SOS
+                    </a>
+                </div>
+            </div>
+            
+            <div class="col-lg-6 animate__animated animate__fadeInRight">
+                <div class="floating">
+                    <img src="{{ url_for('static', filename='images/hero.png') }}" alt="AI Companion" class="img-fluid" style=" width:1000px; padding-left: 70px; " >
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-5 my-4">
+        <div class="text-center mb-5 animate__animated animate__fadeInUp">
+            <h2 class="fw-bold mb-3">Smart Features</h2>
+            <p class="lead text-muted">Discover how AI Companion can enhance your daily life</p>
+        </div>
+        
+        <div class="row g-4">
+            <!-- Health Monitoring -->
+            <div class="col-md-6 col-lg-4 animate__animated animate__fadeInUp" data-wow-delay="0.1s">
+                <div class="card h-100 border-0 shadow-sm glass-card hover-effect">
+                    <div class="card-body p-4 text-center">
+                        <div class="feature-icon mb-4">
+                            <div class="icon-wrapper bg-primary bg-opacity-10 rounded-circle p-3 d-inline-block">
+                                <i class="fas fa-heartbeat fa-2x text-primary"></i>
+                            </div>
+                        </div>
+                        <h4 class="mb-3">Health Monitoring</h4>
+                        <p class="text-muted">Track vital signs, medication schedules, and daily health metrics with intelligent reminders.</p>
+                        <a href="{{ url_for('health_monitoring') }}" class="btn btn-sm btn-outline-primary mt-2 rounded-pill pulse">
+                            <i class="fas fa-arrow-right me-1"></i> <b>Explore</b>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Voice Assistant -->
+            <div class="col-md-6 col-lg-4 animate__animated animate__fadeInUp" data-wow-delay="0.2s">
+                <div class="card h-100 border-0 shadow-sm glass-card hover-effect">
+                    <div class="card-body p-4 text-center">
+                        <div class="feature-icon mb-4">
+                            <div class="icon-wrapper bg-success bg-opacity-10 rounded-circle p-3 d-inline-block">
+                                <i class="fas fa-microphone fa-2x text-success"></i>
+                            </div>
+                        </div>
+                        <h4 class="mb-3">Voice Assistant</h4>
+                        <p class="text-muted">Natural language processing for medication reminders, emergency alerts, and daily assistance.</p>
+                        <a href="{{ url_for('voice_assistant') }}" class="btn btn-sm btn-outline-success mt-2 rounded-pill pulse">
+                            <i class="fas fa-arrow-right me-1"></i> <b>Explore</b>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Object Detection -->
+            <div class="col-md-6 col-lg-4 animate__animated animate__fadeInUp" data-wow-delay="0.3s">
+                <div class="card h-100 border-0 shadow-sm glass-card hover-effect">
+                    <div class="card-body p-4 text-center">
+                        <div class="feature-icon mb-4">
+                            <div class="icon-wrapper bg-info bg-opacity-10 rounded-circle p-3 d-inline-block">
+                                <i class="fas fa-eye fa-2x text-info"></i>
+                            </div>
+                        </div>
+                        <h4 class="mb-3">Object Detection</h4>
+                        <p class="text-muted">Computer vision to identify objects, hazards, and assist with navigation in your environment.</p>
+                        <a href="{{ url_for('object_detection') }}" class="btn btn-sm btn-outline-info mt-2 rounded-pill pulse">
+                            <i class="fas fa-arrow-right me-1"></i> <b>Explore</b>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Face Recognition -->
+            <div class="col-md-6 col-lg-4 animate__animated animate__fadeInUp" data-wow-delay="0.4s">
+                <div class="card h-100 border-0 shadow-sm glass-card hover-effect">
+                    <div class="card-body p-4 text-center">
+                        <div class="feature-icon mb-4">
+                            <div class="icon-wrapper bg-warning bg-opacity-10 rounded-circle p-3 d-inline-block" style="bg-warning: #FFC107;">
+                                <i class="fas fa-user fa-2x text-warning"></i>
+                            </div>
+                        </div>
+                        <h4 class="mb-3">Face Recognition</h4>
+                        <p class="text-muted">Identify family members, caregivers, and authorized personnel with facial recognition technology.</p>
+                        <a href="{{ url_for('face_detection') }}" class="btn btn-sm btn-outline-warning mt-2 rounded-pill pulse">
+                            <i class="fas fa-arrow-right me-1"></i> <b>Explore</b>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- IoT Control -->
+            <div class="col-md-6 col-lg-4 animate__animated animate__fadeInUp" data-wow-delay="0.5s">
+                <div class="card h-100 border-0 shadow-sm glass-card hover-effect">
+                    <div class="card-body p-4 text-center">
+                        <div class="feature-icon mb-4">
+                            <div class="icon-wrapper bg-danger bg-opacity-10 rounded-circle p-3 d-inline-block">
+                                <i class="fas fa-plug fa-2x text-danger"></i>
+                            </div>
+                        </div>
+                        <h4 class="mb-3">IoT Control</h4>
+                        <p class="text-muted">Manage smart home devices like lights, thermostat, and security systems.</p>
+                        <a href="#iot-section" class="btn btn-sm btn-outline-danger mt-2 rounded-pill pulse">
+                            <i class="fas fa-arrow-right me-1"></i> <b>Explore</b>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Emergency SOS -->
+            <div class="col-md-6 col-lg-4 animate__animated animate__fadeInUp" data-wow-delay="0.6s">
+                <div class="card h-100 border-0 shadow-sm glass-card hover-effect">
+                    <div class="card-body p-4 text-center">
+                        <div class="feature-icon mb-4">
+                            <div class="icon-wrapper bg-purple bg-opacity-10 rounded-circle p-3 d-inline-block">
+                                <i class="fas fa-bell fa-2x text-purple"></i>
+                            </div>
+                        </div>
+                        <h4 class="mb-3">Emergency SOS</h4>
+                        <p class="text-muted">Instant emergency alerts to caregivers and medical services with your current location.</p>
+                        <a href="{{ url_for('emergency_sos') }}" class="btn btn-sm btn-outline-purple mt-2 rounded-pill pulse">
+                            <i class="fas fa-arrow-right me-1"></i> <b>Explore</b>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- IoT Section -->
+    <section id="iot-section" class="py-5 my-4">
+        <div class="card border-0 shadow-sm glass-card animate__animated animate__fadeIn">
+            <div class="card-header bg-transparent border-0">
+                <h3 class="mb-0"><i class="fas fa-plug me-2"></i> IoT Device Control</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <h5 class="mb-3"><i class="fas fa-lightbulb me-2"></i> Lights</h5>
+                        <div class="btn-group w-100" role="group">
+                            <button type="button" class="btn btn-outline-primary" id="lightsOn">On</button>
+                            <button type="button" class="btn btn-outline-primary" id="lightsOff">Off</button>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <h5 class="mb-3"><i class="fas fa-thermometer-half me-2"></i> Thermostat</h5>
+                        <div class="d-flex align-items-center">
+                            <button class="btn btn-outline-primary btn-sm rounded-circle" id="tempDown">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <span class="mx-3 fs-4" id="tempValue">22°C</span>
+                            <button class="btn btn-outline-primary btn-sm rounded-circle" id="tempUp">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <h5 class="mb-3"><i class="fas fa-lock me-2"></i> Security</h5>
+                        <div class="btn-group w-100" role="group">
+                            <button type="button" class="btn btn-outline-primary" id="securityArm">Arm</button>
+                            <button type="button" class="btn btn-outline-primary" id="securityDisarm">Disarm</button>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <h5 class="mb-3"><i class="fas fa-volume-up me-2"></i> Bluetooth Audio</h5>
+                        <div class="d-flex align-items-center">
+                            <button class="btn btn-outline-primary" id="connectBluetooth">
+                                <i class="fas fa-bluetooth me-2"></i> Connect
+                            </button>
+                            <div class="ms-3" id="bluetoothStatus">Not connected</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<style>
+    .fas {
+        font-weight: bold;
+    }
+    .text-gradient {
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+
+    .hover-effect {
+        transition: all 0.3s ease;
+        transform: translateY(0);
+    }
+
+    .hover-effect:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+    }
+
+    .icon-wrapper {
+        transition: all 0.3s ease;
+    }
+
+    .hover-effect:hover .icon-wrapper {
+        transform: rotate(10deg) scale(1.1);
+    }
+
+    .bg-purple {
+        background-color: rgba(111,66,193,0.1) !important;
+    }
+    
+    .text-purple {
+        color: #6f42c1 !important;
+    }
+    
+    .btn-outline-purple {
+        color: #6f42c1;
+        border-color: #6f42c1;
+    }
+    
+    .btn-outline-purple:hover {
+        background-color: #6f42c1;
+        color: white;
+    }
+
+    @media (max-width: 100px) {
+        .hero-section {
+            max-width: 50%;
+            width: 50px;
+            height: 50px;
+        }
+        
+        .display-4 {
+            font-size: 2.5rem;
+        }
+    }
+</style>
+
+<script>
+    // IoT Controls
+    document.getElementById('lightsOn').addEventListener('click', function() {
+        alert('Lights turned on');
+    });
+
+    document.getElementById('lightsOff').addEventListener('click', function() {
+        alert('Lights turned off');
+    });
+
+    document.getElementById('securityArm').addEventListener('click', function() {
+        alert('Security system armed');
+    });
+
+    document.getElementById('securityDisarm').addEventListener('click', function() {
+        alert('Security system disarmed');
+    });
+
+    // Temperature control
+    const tempValue = document.getElementById('tempValue');
+    document.getElementById('tempUp').addEventListener('click', function() {
+        let temp = parseInt(tempValue.textContent);
+        if (temp < 30) tempValue.textContent = (temp + 1) + '°C';
+    });
+
+    document.getElementById('tempDown').addEventListener('click', function() {
+        let temp = parseInt(tempValue.textContent);
+        if (temp > 16) tempValue.textContent = (temp - 1) + '°C';
+    });
+
+    // Bluetooth connection
+    document.getElementById('connectBluetooth').addEventListener('click', function() {
+        const status = document.getElementById('bluetoothStatus');
+        if (status.textContent === 'Not connected') {
+            status.textContent = 'Connected';
+            status.classList.add('text-success');
+        } else {
+            status.textContent = 'Not connected';
+            status.classList.remove('text-success');
+        }
+    });
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>AI Companion | {% block title %}{% endblock %}</title>
+        
+        <!-- Bootstrap CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        
+        <!-- Animate.css -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+        
+        <!-- Google Fonts -->
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+        
+        <style>
+            :root {
+                --primary: #4A6FA5;
+                --secondary: #6BBBAE;
+                --accent: #FF7E5D;
+                --light: #F8F9FA;
+                --dark: #2E3A4D;
+                --text-light: #f8f9fa;
+                --text-dark: #212529;
+                --card-bg-light: rgba(255, 255, 255, 0.85);
+                --card-bg-dark: rgba(33, 37, 41, 0.85);
+                --input-bg-light: rgba(255, 255, 255, 0.9);
+                --input-bg-dark: rgba(50, 50, 50, 0.9);
+            }
+            
+            [data-bs-theme="dark"] {
+                --light: #212529;
+                --dark: #f8f9fa;
+                --text-light: #212529;
+                --text-dark: #f8f9fa;
+                --card-bg: var(--card-bg-dark);
+                --input-bg: var(--input-bg-dark);
+                background-color: #121212;
+                color: var(--text-dark);
+            }
+            
+            [data-bs-theme="light"] {
+                --card-bg: var(--card-bg-light);
+                --input-bg: var(--input-bg-light);
+                background-color: #f8f9fa;
+                color: var(--text-dark);
+            }
+            
+            body {
+                font-family: 'Poppins', sans-serif;
+                min-height: 100vh;
+                transition: all 0.3s ease;
+            }
+            
+            /* Glassmorphism effect */
+            .glass-card {
+                background: var(--card-bg);
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+                border-radius: 15px;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+                transition: all 0.3s ease;
+            }
+            
+            [data-bs-theme="dark"] .glass-card {
+                border: 1px solid rgba(0, 0, 0, 0.3);
+                --card-bg: rgba(255, 255, 255, 0.1);
+            }
+            [data-bs-theme="light"] .glass-card {
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                --card-bg: rgba(0, 0, 0, 0.1);
+            }
+            [data-bs-theme="dark"] .glass-card:hover {
+                box-shadow: 0 8px 32px 0 rgba(255, 255, 255, 0.2);
+                --card-bg: rgba(255, 255, 255, 0.2);
+            }
+            [data-bs-theme="light"] .glass-card:hover {
+                box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+                --card-bg: rgba(0, 0, 0, 0.2);
+            }
+            [data-bs-theme="dark"] .glass-card:hover-effect:hover {
+                box-shadow: 0 8px 32px 0 rgba(255, 255, 255, 0.3);
+                --card-bg: rgba(255, 255, 255, 0.3);
+            }
+            [data-bs-theme="light"] .glass-card:hover-effect:hover {
+                box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+                --card-bg: rgba(0, 0, 0, 0.2);
+            }
+            
+            /* Input fields */
+            .form-control, .form-select, .time-input {
+                background-color: rgba(255, 255, 255, 0.9);
+                border: 1px solid rgba(0, 0, 0, 0.1);
+                color: var(--text-dark);
+                transition: all 0.3s ease;
+            }
+            
+            [data-bs-theme="dark"] .form-control, 
+            [data-bs-theme="dark"] .form-select,
+            [data-bs-theme="dark"] .time-input {
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                background-color: rgba(255, 255, 255, 0.3);
+                color: var(--text-light);
+            }
+            [data-bs-theme="light"] .form-control,
+            [data-bs-theme="light"] .form-select,
+            [data-bs-theme="light"] .time-input {
+                border: 1px solid rgba(0, 0, 0, 0.1);
+                background-color: rgba(255, 255, 255, 0.9);
+                color: var(--text-dark);
+            }
+            .form-control:focus, .form-select:focus, .time-input:focus {
+                border-color: var(--primary);
+                box-shadow: 0 0 0 0.2rem rgba(74, 111, 165, 0.25);
+            }
+            .form-control::placeholder, .form-select::placeholder, .time-input::placeholder {
+                color: var(--text-dark);
+                opacity: 0.7;
+            }
+            
+            /* Navbar */
+            .navbar {
+                background: rgba(33, 37, 41, 0.9) !important;
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+            }
+            
+            /* Buttons */
+            .btn {
+                transition: all 0.3s ease;
+            }
+            
+            /* Pulse animation for emergency */
+            @keyframes pulse {
+                0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7); }
+                70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(220, 53, 69, 0); }
+                100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+            }
+            
+            .pulse {
+                animation: pulse 2s infinite;
+            }
+        
+            /* Floating animation */
+            @keyframes float {
+                0% { transform: translateY(0px); }
+                50% { transform: translateY(-10px); }
+                100% { transform: translateY(0px); }
+            }
+            
+            .floating {
+                animation: float 3s ease-in-out infinite;
+            }
+            
+            /* Custom scrollbar */
+            ::-webkit-scrollbar {
+                width: 8px;
+            }
+            
+            ::-webkit-scrollbar-track {
+                background: rgba(0, 0, 0, 0.1);
+            }
+            
+            ::-webkit-scrollbar-thumb {
+                background: var(--primary);
+                border-radius: 10px;
+            }
+            
+            /* Page transition */
+            .page-transition {
+                animation: fadeIn 0.6s ease-out forwards;
+            }
+            
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(20px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+
+            .dropdown-menu {
+                z-index: 1020; /* Ensures dropdown appears above other elements */
+            }
+        
+            /* Footer Styles */
+            footer {
+                background-color: rgba(46, 58, 77, 0.9);
+                color: white;
+                padding: 2.5rem 0 1rem;
+                backdrop-filter: blur(5px);
+            }
+            
+            .footer-content {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 2rem;
+                margin-bottom: 2rem;
+            }
+            
+            .footer-section h3 {
+                font-size: 1.2rem;
+                margin-bottom: 1.25rem;
+                color: white;
+            }
+            
+            .footer-section p {
+                margin-bottom: 1rem;
+                color: var(--gray);
+            }
+            
+            .footer-section ul {
+                list-style: none;
+                padding-left: 0;
+            }
+            
+            .footer-section ul li {
+                margin-bottom: 0.75rem;
+            }
+            
+            .footer-section ul li a {
+                color: var(--gray);
+                text-decoration: none;
+                transition: color 0.3s ease;
+            }
+            
+            .footer-section ul li a:hover {
+                color: white;
+            }
+            
+            .sos-btn {
+                background-color: rgb(220,53,69);
+                color: white;
+                border: none;
+                padding: 0.5rem 1rem;
+                border-radius: 0.25rem;
+                font-weight: bold;
+                cursor: pointer;
+                margin-bottom: 1rem;
+                transition: background-color 0.3s ease;
+            }
+            
+            .sos-btn:hover {
+                background-color: #e66a4a;
+            }
+
+            .copyright {
+                text-align: center;
+                padding-top: 1.25rem;
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+                color: var(--gray);
+                font-size: 0.875rem;
+            }
+            .alarm-shake {
+                animation: shake 0.5s infinite;
+            }
+            
+            #alarmModal .modal-content {
+                border: 3px solid var(--primary);
+                box-shadow: 0 0 20px rgba(74, 111, 165, 0.5);
+            }
+
+        </style>
+    </head>
+    <body>
+        <!-- Navigation -->
+        <nav class="navbar navbar-expand-lg navbar-dark shadow-sm sticky-top">
+            <div class="container">
+                <a class="navbar-brand d-flex align-items-center" href="{{ url_for('home') }}">
+                    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" width="40" height="40" class="me-2">
+                    <span class="fw-bold">AI Companion</span>
+                </a>
+                
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item mx-2">
+                            <a class="nav-link {% if request.path == url_for('home') %}active{% endif %}" href="{{ url_for('home') }}">
+                                <i class="fas fa-home me-1"></i> Home
+                            </a>
+                        </li>
+                        <li class="nav-item mx-2">
+                            <a class="nav-link {% if request.path == url_for('emergency_sos') %}active{% endif %}" href="{{ url_for('emergency_sos') }}">
+                                <i class="fas fa-bell me-1"></i> Emergency
+                            </a>
+                        </li>
+                        <li class="nav-item dropdown mx-2">
+                            <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" 
+                               data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-user me-1"></i> Profile
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                                {% if current_user.is_authenticated %}
+                                    <li><a class="dropdown-item" href="{{ url_for('profile') }}"><i class="fas fa-user-circle me-2"></i> My Profile</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#logoutModal"><i class="fas fa-sign-out-alt me-2"></i> Logout</button></li>
+                                {% else %}
+                                    <li><a class="dropdown-item" href="{{ url_for('login') }}"><i class="fas fa-sign-in-alt me-2"></i> Login</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('register') }}"><i class="fas fa-user-plus me-2"></i> Register</a></li>
+                                {% endif %}
+                            </ul>
+                        </li>
+                        <li class="nav-item mx-2">
+                            <button class="btn btn-sm btn-outline-light rounded-pill" id="theme-toggle">
+                                <i class="fas fa-moon"></i>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    
+    <!-- Main Content -->
+    <main class="container my-5 page-transition">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show mb-4">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+        
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Alarm Notification (fixed bottom) -->
+    <div id="alarm-container" class="position-fixed bottom-0 end-0 m-3" style="display: none;">
+        <div class="card border-warning">
+            <div class="card-header bg-warning text-dark">
+                <i class="fas fa-bell me-2"></i>
+                <span id="alarm-type">Alarm</span>
+            </div>
+            <div class="card-body">
+                <audio id="alarm-audio" controls class="w-100 mb-2"></audio>
+                <button onclick="stopAlarm()" class="btn btn-sm btn-outline-danger">
+                    <i class="fas fa-stop me-1" style= "justify-content: center"></i> Stop Alarm
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>About AI Companion</h3>
+                    <p>An AI-powered companion designed to enhance independence and quality of life for elderly and disabled individuals.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="{{ url_for('home') }}">Home</a></li>
+                        <li><a href="{{ url_for('health_monitoring') }}">Health Monitoring</a></li>
+                        <li><a href="{{ url_for('voice_assistant') }}">Voice Assistant</a></li>
+                        <li><a href="{{ url_for('object_detection') }}">Object Detection</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Emergency</h3>
+                    <button id="sosButton" class="sos-btn"><i class="fas fa-bell"></i> SOS Button</button>
+                    <p>24/7 Emergency Support</p>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 BRV INNOVATIONS. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-warning">
+                    <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to logout?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- Custom Scripts -->
+    <script src="{{ url_for('static', filename='js/alarm.js') }}"></script>
+    <script>
+        // Theme toggle
+        document.getElementById('theme-toggle').addEventListener('click', function() {
+            const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-bs-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            this.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+        });
+        
+        // Initialize theme from localStorage
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-bs-theme', savedTheme);
+        document.getElementById('theme-toggle').innerHTML = 
+        savedTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+        
+        // Emergency button
+        document.getElementById('emergencyFooterBtn').addEventListener('click', function() {
+            window.location.href = "{{ url_for('emergency_sos') }}";
+        });
+
+        var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'))
+            var dropdownList = dropdownElementList.map(function (dropdownToggleEl) {
+                return new bootstrap.Dropdown(dropdownToggleEl)
+            });
+
+            let currentAlarm = null;
+            let alarmModal = null;
+            
+            // Initialize when DOM is loaded
+            document.addEventListener('DOMContentLoaded', function() {
+                // Initialize modal
+                alarmModal = new bootstrap.Modal(document.getElementById('alarmModal'));
+                
+                // Set up modal hidden event
+                document.getElementById('alarmModal').addEventListener('hidden.bs.modal', function() {
+                    if (currentAlarm) {
+                        currentAlarm.audio.pause();
+                        currentAlarm.audio.currentTime = 0;
+                        currentAlarm = null;
+                    }
+                });
+                
+                // Start checking for alarms
+                checkAlarms();
+                setInterval(checkAlarms, 1000); // Check every second
+            });
+            
+            function checkAlarms() {
+                fetch('/check_alarm')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.alarm_triggered && (!currentAlarm || currentAlarm.type !== data.type)) {
+                            triggerAlarm(data);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error checking alarms:', error);
+                    });
+            }
+            
+            function triggerAlarm(alarmData) {
+                // Stop any existing alarm
+                if (currentAlarm) {
+                    currentAlarm.audio.pause();
+                    currentAlarm.audio.currentTime = 0;
+                }
+                
+                // Create new alarm
+                currentAlarm = {
+                    type: alarmData.type,
+                    audio: new Audio(alarmData.audio_file),
+                    message: alarmData.message
+                };
+                
+                // Configure audio
+                currentAlarm.audio.loop = true;
+                
+                // Update modal content
+                document.getElementById('alarmMessage').textContent = currentAlarm.message;
+                document.getElementById('alarmModalLabel').textContent = alarmData.type + ' Reminder';
+                document.getElementById('alarmAudio').src = alarmData.audio_file;
+                document.getElementById('alarmFallback').classList.add('d-none');
+                
+                // Show modal
+                alarmModal.show();
+                
+                // Try to play audio
+                const playPromise = currentAlarm.audio.play();
+                
+                if (playPromise !== undefined) {
+                    playPromise.catch(error => {
+                        console.log('Autoplay prevented:', error);
+                        document.getElementById('alarmFallback').classList.remove('d-none');
+                    });
+                }
+            }
+            
+            function playAlarmManually() {
+                if (currentAlarm) {
+                    currentAlarm.audio.play()
+                        .then(() => {
+                            document.getElementById('alarmFallback').classList.add('d-none');
+                        })
+                        .catch(error => {
+                            console.log('Playback failed:', error);
+                        });
+                }
+            }
+        
+        // Back to top button
+        window.addEventListener('scroll', function() {
+            const backToTop = document.getElementById('backToTop');
+            if (window.pageYOffset > 300) {
+                backToTop.style.display = 'block';
+            } else {
+                backToTop.style.display = 'none';
+            }
+        });
+        
+        document.getElementById('backToTop').addEventListener('click', function() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            function checkAlarms() {
+                fetch('/check_alarm', { credentials: 'include' })
+                    .then(response => {
+                        if (!response.ok) throw new Error('Network response was not ok');
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.alarm_triggered) {
+                            const audio = new Audio(data.audio_file);
+                            audio.play().catch(error => console.error('Audio play failed:', error));
+                            alert(data.message); // Replace with a modal or notification if needed
+                        }
+                    })
+                    .catch(error => console.error('Error checking alarms:', error));
+            }
+
+            // Check alarms every 10 seconds
+            setInterval(checkAlarms, 1000);
+        });
+    </script>
+    
+    
+        {% block scripts %}{% endblock %}
+    </body>
+    </html>

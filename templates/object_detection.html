@@ -1,0 +1,288 @@
+{% extends "base.html" %}
+
+{% block title %}Object Detection{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card border-0 shadow glass-card animate__animated animate__fadeIn">
+                <div class="card-header bg-primary text-white border-0">
+                    <h2 class="mb-0">
+                        <i class="fas fa-eye me-2"></i> Object Detection
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <ul class="nav nav-tabs mb-4" id="detectionTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="webcam-tab" data-bs-toggle="tab" 
+                                    data-bs-target="#webcam" type="button" role="tab">
+                                <i class="fas fa-camera me-2"></i> Live Detection
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="upload-tab" data-bs-toggle="tab" 
+                                    data-bs-target="#upload" type="button" role="tab">
+                                <i class="fas fa-upload me-2"></i> Image Upload
+                            </button>
+                        </li>
+                    </ul>
+                    
+                    <div class="tab-content">
+                        <!-- Webcam Tab -->
+                        <div class="tab-pane fade show active" id="webcam" role="tabpanel">
+                            <div class="text-center">
+                                <div class="webcam-container mb-4">
+                                    <!-- Video Feed -->
+                                    <video id="webcamFeed" class="h-100 w-100" autoplay playsinline style="display: none;"></video>
+                                    
+                                    <!-- Placeholder -->
+                                    <div id="webcamPlaceholder" class="d-flex align-items-center justify-content-center h-100 w-100 position-absolute" style="top: 0; left: 0; z-index: 0; background-color: rgba(0,0,0,0.7);">
+                                        <div class="text-center text-white p-4">
+                                            <i class="fas fa-camera fa-4x mb-3"></i>
+                                            <h4>Camera Not Active</h4>
+                                            <p>Click "Start" to begin object detection</p>  
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex justify-content-center gap-3 mb-3">
+                                    <button id="startWebcam" class="btn btn-primary">
+                                        <i class="fas fa-play me-2"></i> Start
+                                    </button>
+                                    <button id="stopWebcam" class="btn btn-outline-danger" disabled>
+                                        <i class="fas fa-stop me-2"></i> Stop
+                                    </button>
+                                </div>
+                                <div class="alert alert-info" id="webcamDetectionResult" style="display: none;">
+                                    <strong>Detected:</strong> <span id="webcamPrediction">-</span>
+                                    (<span id="webcamConfidence">-</span> confidence)
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Upload Tab -->
+                        <div class="tab-pane fade" id="upload" role="tabpanel">
+                            <form id="uploadForm" method="post" enctype="multipart/form-data" class="mb-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Upload Image</label>
+                                    <input type="file" class="form-control" name="file" accept="image/*" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-search me-2"></i> Detect Objects
+                                </button>
+                            </form>
+                            
+                            <div id="uploadResults" class="text-center" style="display: none;">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card">
+                                            <div class="card-header bg-light">Original Image</div>
+                                            <img id="originalImage" class="card-img-top" alt="Original">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3" id="resultColumn" style="display: none;">
+                                        <div class="card">
+                                            <div class="card-header bg-light">Detection Map</div>
+                                            <img id="resultImage" class="card-img-top" alt="Result">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="alert alert-success mt-3">
+                                    <strong>Detection Result:</strong> 
+                                    <span id="uploadPrediction">-</span>
+                                    (<span id="uploadConfidence">-</span> confidence)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Object Detection
+let isWebcamActive = false;
+let detectionInterval = null;
+const detectionIntervalTime = 3000; // 3 seconds between detections
+let currentSpeech = null;
+let stream = null;
+
+function speakDetectionResult(prediction, confidence) {
+    if (currentSpeech) window.speechSynthesis.cancel();
+    currentSpeech = new SpeechSynthesisUtterance(
+        `Object detected: ${prediction}`
+    );
+    currentSpeech.onend = () => { currentSpeech = null; };
+    window.speechSynthesis.speak(currentSpeech);
+}
+
+async function performObjectDetection() {
+    if (!isWebcamActive) return;
+    
+    const video = document.getElementById('webcamFeed');
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    
+    try {
+        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg'));
+        const formData = new FormData();
+        formData.append('file', blob, 'webcam_frame.jpg');
+        
+        const response = await fetch('/object_detection', { method: 'POST', body: formData });
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+            document.getElementById('webcamPrediction').textContent = data.prediction;
+            document.getElementById('webcamConfidence').textContent = data.confidence;
+            document.getElementById('webcamDetectionResult').style.display = 'block';
+            speakDetectionResult(data.prediction, parseFloat(data.confidence));
+        }
+    } catch (error) {
+        console.error('Detection error:', error);
+    }
+}
+
+async function startWebcam() {
+    try {
+        const video = document.getElementById('webcamFeed');
+        const placeholder = document.getElementById('webcamPlaceholder');
+        
+        stream = await navigator.mediaDevices.getUserMedia({ video: true});
+        video.srcObject = stream;
+        video.style.display = 'block';
+        placeholder.style.display = 'none';
+        
+        document.getElementById('startWebcam').disabled = true;
+        document.getElementById('stopWebcam').disabled = false;
+        isWebcamActive = true;
+        
+        // Ensure placeholder stays hidden
+        video.onloadedmetadata = () => {
+            video.style.display = 'block';
+            placeholder.style.display = 'none';
+            
+            // Start detection
+            performObjectDetection();
+            detectionInterval = setInterval(performObjectDetection, detectionIntervalTime);
+        };
+        
+    } catch (error) {
+        console.error('Error accessing camera:', error);
+        alert('Could not access the camera. Please ensure you have granted camera permissions.');
+        document.getElementById('webcamPlaceholder').style.display = 'flex';
+    }
+}
+
+function stopWebcam() {
+    if (!isWebcamActive) return;
+    
+    clearInterval(detectionInterval);
+    window.speechSynthesis.cancel();
+    currentSpeech = null;
+    
+    const video = document.getElementById('webcamFeed');
+    const placeholder = document.getElementById('webcamPlaceholder');
+    
+    if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        stream = null;
+    }
+    
+    video.srcObject = null;
+    video.style.display = 'none';
+    placeholder.style.display = 'flex';
+    document.getElementById('webcamDetectionResult').style.display = 'none';
+    
+    document.getElementById('startWebcam').disabled = false;
+    document.getElementById('stopWebcam').disabled = true;
+    isWebcamActive = false;
+}
+
+document.getElementById('startWebcam').addEventListener('click', startWebcam);
+document.getElementById('stopWebcam').addEventListener('click', stopWebcam);
+
+// Image Upload Handling
+document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    try {
+        const response = await fetch('/object_detection', { method: 'POST', body: formData });
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+            document.getElementById('originalImage').src = `/static/uploads/${data.filename}?${Date.now()}`;
+            
+            if (data.heatmap_available) {
+                document.getElementById('resultImage').src = `/static/uploads/${data.result_filename}?${Date.now()}`;
+                document.getElementById('resultColumn').style.display = 'block';
+            } else {
+                document.getElementById('resultColumn').style.display = 'none';
+            }
+            
+            document.getElementById('uploadPrediction').textContent = data.prediction;
+            document.getElementById('uploadConfidence').textContent = data.confidence;
+            document.getElementById('uploadResults').style.display = 'block';
+            speakDetectionResult(data.prediction, parseFloat(data.confidence));
+        } else {
+            alert(data.error || 'Object detection failed');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred during object detection');
+    }
+});
+</script>
+
+<style>
+    .webcam-container {
+        position: relative;
+        width: 100%;
+        min-height: 480px;
+        background-color: #000;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 1rem;
+    }
+    
+    #webcamFeed {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: 1;
+    }
+    
+    #webcamPlaceholder {
+        z-index: 2;
+    }
+    
+    .card-img-top {
+        max-height: 400px;
+        object-fit: contain;
+        background-color: #f8f9fa;
+    }
+    
+    .nav-tabs .nav-link.active {
+        background-color: rgba(74, 111, 165, 0.1);
+        border-bottom: 3px solid var(--primary);
+    }
+</style>
+{% endblock %}
+
+
+Camera Not Active
+Click "Start" to begin object detection 
+
+
+on the webcam video this is being showed even after clicking start
